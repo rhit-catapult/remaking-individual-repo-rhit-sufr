@@ -1,4 +1,4 @@
-from pickle import REDUCE
+# from pickle import REDUCE
 
 import pygame
 import sys
@@ -31,9 +31,12 @@ image1 = pygame.image.load("02-DogBark/2dogs.JPG")
 font1 = pygame.font.SysFont("jetbrains mono", 200)
 caption1 = font1.render("DogBark", True, WHITE)
 bark_sound = pygame.mixer.Sound("02-DogBark/bark.wav")
+pygame.mixer.music.load("03-ClickInTheCircle/drums.wav")
 
 def distance(p1, p2):
     return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
+
+caption1_flag = 0
 
 while running:
     for event in pygame.event.get():
@@ -41,12 +44,20 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             bark_sound.play()
+            print(distance(player_pos, pygame.mouse.get_pos()))
+            if distance(player_pos, pygame.mouse.get_pos()) > 40:
+                print("Outside")
+                caption1_flag = 150
+                pygame.mixer.music.stop()
+            else:
+                pygame.mixer.music.play(-1)
 
     # Drawing
     screen.fill(WHITE)
 
     screen.blit(image1, (500, 250))
-    screen.blit(caption1, (800, 300))
+    if caption1_flag > 0:
+        screen.blit(caption1, (500, 250))
 
     pygame.draw.rect(screen, RED, (710, 490, 100, 100)) # Draw a blue square
     pygame.draw.rect(screen, ORANGE, (810, 490, 100, 100)) # Draw a blue square
@@ -95,6 +106,8 @@ while running:
             player_pos.x = 0
         if player_pos.x > WIDTH:
             player_pos.x = WIDTH
+
+    caption1_flag -= 1
 
     # Update the display
     pygame.display.flip()
